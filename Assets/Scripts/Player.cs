@@ -29,6 +29,8 @@ public class Player: MonoBehaviour
 	[SerializeField]
 	private int score = 0;
 	private UIManager uiManager;
+	[SerializeField]
+	private GameObject rightEngineHurt , leftEngineHurt;
     // Start is called before the first frame update
     void Start()
     {
@@ -86,7 +88,13 @@ public class Player: MonoBehaviour
     	else{
     	_lives -= 1;
     	uiManager.updateLivesImage(_lives);
-    	if(_lives <= 0){
+    	if(_lives == 2){
+    		rightEngineHurt.SetActive(true);
+    	}
+    	else if(_lives == 1){
+    		leftEngineHurt.SetActive(true);
+    	}
+    	else if(_lives <= 0){
     		_spawn.playerIsDead();
     		Destroy(this.gameObject);
     	}
