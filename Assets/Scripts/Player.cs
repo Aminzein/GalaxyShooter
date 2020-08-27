@@ -31,12 +31,21 @@ public class Player: MonoBehaviour
 	private UIManager uiManager;
 	[SerializeField]
 	private GameObject rightEngineHurt , leftEngineHurt;
+	[SerializeField]
+	private AudioClip laserAudio;
+	[SerializeField]
+	private AudioSource playerAudioSource;
+	[SerializeField]
+	private AudioClip explosionAudioClip;
+	[SerializeField]
+	private AudioClip powerUpAudioClip;
     // Start is called before the first frame update
     void Start()
     {
         transform.position = new Vector3(0, 0, 0);
         _spawn = GameObject.Find("spawnManager").GetComponent<spawnManager>();
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        playerAudioSource = GetComponent<AudioSource>();
         if(_spawn == null){
         	Debug.Log("spawn is null");
         }
@@ -77,7 +86,9 @@ public class Player: MonoBehaviour
     	else{
     	Vector3 laserPosition = new Vector3 (transform.position.x , transform.position.y + 1.05f , 0);
     	Instantiate(_laserPrefab , laserPosition , Quaternion.identity);
-    }
+    	}
+    	playerAudioSource.clip = laserAudio;
+    	playerAudioSource.Play();
     }
     public void damage(){
     	if(isShieldActive){
@@ -95,12 +106,15 @@ public class Player: MonoBehaviour
     		leftEngineHurt.SetActive(true);
     	}
     	else if(_lives <= 0){
+    		playerAudioSource.clip = explosionAudioClip;
+    		playerAudioSource.Play();
     		_spawn.playerIsDead();
     		Destroy(this.gameObject);
     	}
     }
     }
     public void collectTripleShot(){
+    	playPowerUpAudioClips();
     	isTripleShotActived = true;
   		StartCoroutine(tripleShotPowerDownRoutine());
     }
@@ -112,6 +126,7 @@ public class Player: MonoBehaviour
     	}
     }
     public void speedPowerUp(){
+    	playPowerUpAudioClips();
     	isSpeedBoostActive = true;
     	_speed = _speed * speedMult;
     	StartCoroutine(speedPowerUpRoutine());
@@ -122,6 +137,7 @@ public class Player: MonoBehaviour
     	isSpeedBoostActive = false;
     }
     public void activateShield(){
+    	playPowerUpAudioClips();
     	isShieldActive = true;
     	shieldPrefab.SetActive(true);
     }
@@ -133,5 +149,10 @@ public class Player: MonoBehaviour
     }
     public int getLives(){
     	return _lives;
+    }
+
+    private void playPowerUpAudioClips(){
+    	playerAudioSource.clip = powerUpAudioClip;
+    	playerAudioSource.Play();
     }
 }
